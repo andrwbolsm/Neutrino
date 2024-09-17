@@ -469,7 +469,7 @@ void loop()
         maxAltitude = altitude; // save highest altitude
       }
 
-      if (abs(maxAltitude - altitude) > 1.5 || VelocityVerticalKalman / 100 < 0)
+      if (abs(maxAltitude - altitude) > 1.5 && VelocityVerticalKalman / 100 < 0)
       { // colocar velocidade pra redundancia
         apogee = true;
       }
