@@ -10,10 +10,10 @@ nome_arquivo = askopenfilename(title='Selecione um arquivo CSV', filetypes=[('CS
 header = 'Aceleração Vertical'
 
 if nome_arquivo:
-    dados = pd.read_csv(nome_arquivo)
-    tempo_em_segundos = dados.index / 1000
+    dados = (pd.read_csv(nome_arquivo) - 1)*9.81
+    tempo_em_segundos = dados.index / 512
     N = len(dados[header])
-    Fs = 1000
+    Fs = 512
     yf = np.fft.fft(dados[header])
     xf = np.fft.fftfreq(N, 1/Fs)
 
@@ -24,7 +24,7 @@ if nome_arquivo:
     axs[0].set_ylabel('Aceleração [m/s²]')
     axs[0].grid()
     
-    axs[1].plot(xf[:N // 2], np.abs(yf[:N // 2]), 'b')
+    axs[1].loglog(xf[:N // 2], np.abs(yf[:N // 2]), 'b')
     axs[1].set_title('Espectro de Frequência')
     axs[1].set_xlabel('Frequência [Hz]')
     axs[1].set_ylabel('Magnitude')

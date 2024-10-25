@@ -5,7 +5,7 @@ import pandas as pd
 import time
 
 tempo = int(input("Tempo de teste (s): "))
-lenght = 1000*tempo
+lenght = 512*tempo
 acel_data = np.zeros(lenght)
 
 ports = serial.tools.list_ports.comports()
