@@ -27,8 +27,8 @@ int i = 0;
 float AltitudeHistory[2], AltitudeStartup = 0, PressureStartup = 1013.25, TemperatureStartup = 15;
 
 // Setar a sensitividade do acelerômetro
-const int ACEL_SENS = 0x10; // 2g -> 0x00, 4g -> 0x08, 8g -> 0x10, 16g -> 0x18
-const float fs_a = 4096.0; // fator de escala p aceleração: 2g -> 16374; 4g -> 8192; 8g -> 4096; 16g -> 2048
+const int ACEL_SENS = 0x08; // 2g -> 0x00, 4g -> 0x08, 8g -> 0x10, 16g -> 0x18
+const float fs_a = 8192.0; // fator de escala p aceleração: 2g -> 16374; 4g -> 8192; 8g -> 4096; 16g -> 2048
 
 // Setar a sensibilidade do giroscópio
 const int GIRO_SENS = 0x08; // 250 deg/s -> 0x00, 500 deg/s -> 0x08, 1000 deg/s -> 0x10, 2000 deg/s -> 0x18
@@ -37,7 +37,7 @@ const float fs_w = 65.5; // fator de escala p giro: 250 deg/s -> 131; 500 deg/s 
 unsigned long prevTime = 0; // Tempo para o loop principal
 unsigned long sampleTime = 0; // Tempo para o loop de 51 Hz
 
-const int frequency_filter = 200, frequency_sample_save = 51;
+const int frequency_filter = 512, frequency_sample_save = 51;
 
 const unsigned long microT = 1000000 / frequency_filter; 
 const unsigned long sampleInterval = 1000000 / frequency_sample_save; // Intervalo para 51 Hz
@@ -71,8 +71,8 @@ void setup() {
   Wire.begin();
   Serial.begin(115200);
 
-  readFromEEPROM(sizeof(RingBuffer));
-  delay(1000);
+  // readFromEEPROM(sizeof(RingBuffer));
+  // delay(1000);
 
   BMP280Config();
   MPUConfig();
@@ -93,6 +93,9 @@ void setup() {
   S = {0,
        0};
 
+  digitalWrite(Buzzer.Pin, HIGH);
+  delay(1000);
+  digitalWrite(Buzzer.Pin,LOW);
 }
 
 void loop() {
@@ -132,7 +135,7 @@ void loop() {
 }
 
 void printData(){
-  Serial.print("Acel. X: ");
+  Serial.print("Accel. X: ");
   Serial.print(MPUData.accelData[0]);
   Serial.print(" || Altitude: ");
   Serial.print(BMPData.Altitude);
@@ -244,7 +247,7 @@ void MPUConfig(){
   valid decimal digits not beginning with zero = decimal number
   */
 
-  byte DLPF_CFG = 0b00000110; 
+  byte DLPF_CFG = 0b00000000; 
   /* TABELA PARA DLPF_CFG
             |   ACCELEROMETER    |           GYROSCOPE
    DLPF_CFG | Bandwidth | Delay  | Bandwidth | Delay  | Sample Rate
