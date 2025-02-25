@@ -159,7 +159,10 @@ BLA::Matrix<1, 1> R;
 BLA::Matrix<1, 1> L;
 BLA::Matrix<1, 1> M;
 
+<<<<<<< HEAD
 // Inicializando variáveis para calibragem do BMP280
+=======
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
 const float Ai = -0.0065, R0 = 287.0530, g0 = 9.80665;
 int i = 0;
 float AltitudeHistory[2], AltitudeStartup = 0, PressureStartup = 1013.25, TemperatureStartup = 25;
@@ -168,9 +171,15 @@ float AltitudeHistory[2], AltitudeStartup = 0, PressureStartup = 1013.25, Temper
 const int ACEL_SENS = 0x08; // 2g -> 0x00, 4g -> 0x08, 8g -> 0x10, 16g -> 0x18
 const float fs_a = 8192.0; // fator de escala p aceleração: 2g -> 16374; 4g -> 8192; 8g -> 4096; 16g -> 2048
 
+<<<<<<< HEAD
 // // Setar a sensibilidade do giroscópio
 const int GIRO_SENS = 0x00; // 250 deg/s -> 0x00, 500 deg/s -> 0x08, 1000 deg/s -> 0x10, 2000 deg/s -> 0x18
 const float fs_w = 131; // fator de escala p giro: 250 deg/s -> 131; 500 deg/s -> 65.5; 1000 deg/s -> 32.8; 2000 deg/s -> 16.4
+=======
+// Setar a sensibilidade do giroscópio
+// const int GIRO_SENS = 0x08; // 250 deg/s -> 0x00, 500 deg/s -> 0x08, 1000 deg/s -> 0x10, 2000 deg/s -> 0x18
+// const float fs_w = 65.5; // fator de escala p giro: 250 deg/s -> 131; 500 deg/s -> 65.5; 1000 deg/s -> 32.8; 2000 deg/s -> 16.4
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
 
 unsigned long prevTime = 0; // Tempo para o loop principal
 unsigned long sampleTime = 0; // Tempo para o loop de armazenamento na e2prom
@@ -188,9 +197,13 @@ struct {
   float Temp, Pressure, Altitude, MaxAltitude;
 }BMPData;
 
+<<<<<<< HEAD
 struct {
   float Acc[3], Gyro[3], Pitch, Roll;
 }MPUData;
+=======
+float accel;
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
 
 // Variáveis do Buzzer
 struct{
@@ -205,7 +218,11 @@ byte RingBuffer[512]; // 512 é o tamanho da EEPROM do Arduino Nano
 int cnt = 1; // Contador genérico
 int R1 = 620; //ohm
 int R2 = 470; //ohm
+<<<<<<< HEAD
 float battery_level = 0.0; //inicializando nivel da bateria
+=======
+float battery_level = 0.0;
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
 
 Servo servo;
 
@@ -278,12 +295,22 @@ void loop() {
       servo.write(180);
       BuzzerToggle(currentTime);
     }
+<<<<<<< HEAD
     printData();
+=======
+    // printData();
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
   }
 
   if (currentTime - sampleTime >= sampleInterval && cnt < 511) {
     sampleTime = currentTime;
+<<<<<<< HEAD
     RingBuffer[cnt] = floatToByte(BMPData.Altitude, limit_altitude);
+=======
+    RingBuffer[cnt] = floatToByte(AltitudeKalman, 110.0);
+    Serial.println("OK");
+
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
 
     cnt += 1;
 
@@ -300,9 +327,14 @@ void loop() {
   while(savedOnEEPROM){
     star_wars_theme();
   }
+
+  if(savedOnEEPROM){
+    star_wars_theme();
+  }
 }
 
 void printData(){
+<<<<<<< HEAD
   // Serial.print("Accel_X: ");
   // Serial.print(MPUData.Acc[0]);
   // Serial.print(" || Accel_Y: ");
@@ -338,6 +370,22 @@ void printData(){
 
 void kalman_filter(void){
   Acc = getVerticalAcc();
+=======
+  Serial.print("Accel. X: ");
+  Serial.print(accel);
+  Serial.print(" || Altitude: ");
+  Serial.print(BMPData.Altitude);
+  Serial.print(" || Altitude Kalman: ");
+  Serial.print(AltitudeKalman);
+  Serial.print(" || Vertical Velocity: ");
+  Serial.print(VelocityVerticalKalman);
+  Serial.print(" || Battery: ");
+  Serial.println(battery_level);
+}
+
+void kalman_filter(void){
+  Acc = accel;
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
   S = F * S + G * Acc;
   P = F * P * ~F + Q;
   L = H * P * ~H + R;
@@ -350,7 +398,17 @@ void kalman_filter(void){
 }
 
 bool ApogeeDetect(){
+<<<<<<< HEAD
   return (BMPData.Altitude > 1 && BMPData.Altitude < BMPData.MaxAltitude - 0.1 && VelocityVerticalKalman < 0.5);
+=======
+  if (AltitudeKalman > 1.0 && VelocityVerticalKalman < -0.5){
+      servo.write(180);
+    return true;
+  }
+  else{
+    return false;
+  }
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
 }
 
 void BuzzerToggle(unsigned long currentTime){
@@ -417,12 +475,15 @@ void MPUConfig(){
   Wire.write(ACEL_SENS);
   Wire.endTransmission();
 
+<<<<<<< HEAD
   // Configura giroscópio
   Wire.beginTransmission(0x68);
   Wire.write(0x1B); // Registro GYRO_CONFIG
   Wire.write(GIRO_SENS); // Configura a sensibilidade do giroscópio
   Wire.endTransmission();
 
+=======
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
   // Configura o filtro passa-baixa digital
   // Só precisa mudar os três últimos digitos:
 
@@ -456,9 +517,14 @@ void MPUConfig(){
   Wire.write(0x1A);
   Wire.write(DLPF_CFG);
   Wire.endTransmission();
+<<<<<<< HEAD
 
   // Abaixo configuração para deixar em standby os eixos do MPU6050
   byte PWR_MGMT_2 = 0b00000000; // Coloca em standby todos os eixos exceto medições no eixo X
+=======
+  
+  byte PWR_MGMT_2 = 0b00011111; // Coloca em standby todos os eixos exceto medições no eixo X
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
   Wire.beginTransmission(0x68);
   Wire.write(0x6C);
   Wire.write(PWR_MGMT_2);
@@ -480,6 +546,7 @@ void read_MPU6050() {
   // Read temperature data (2 bytes)
   int16_t temp = (Wire.read() << 8 | Wire.read()); // TEMP_OUT_H and TEMP_OUT_L
 
+<<<<<<< HEAD
   // Read gyroscope data (6 bytes)
   int16_t gyro_x = (Wire.read() << 8 | Wire.read()); // GYRO_XOUT_H and GYRO_XOUT_L
   int16_t gyro_y = (Wire.read() << 8 | Wire.read()); // GYRO_YOUT_H and GYRO_YOUT_L
@@ -495,16 +562,26 @@ void read_MPU6050() {
   MPUData.Gyro[1] = gyro_y / fs_w + 0.5;
   MPUData.Gyro[2] = gyro_z / fs_w + 0.7;
 }
+=======
+  // Lê 6 bytes da aceleração
+  int16_t acc_x = (Wire.read() << 8 | Wire.read());
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
 
 float getVerticalAcc() {
   MPUData.Roll = atan(MPUData.Acc[1] / sqrt(MPUData.Acc[0] * MPUData.Acc[0] + MPUData.Acc[2] * MPUData.Acc[2]));
   MPUData.Pitch = atan(-MPUData.Acc[0] / sqrt(MPUData.Acc[1] * MPUData.Acc[1] + MPUData.Acc[2] * MPUData.Acc[2]));
 
+<<<<<<< HEAD
   float a_vertical = -sin(MPUData.Pitch) * MPUData.Acc[0] +
                      cos(MPUData.Pitch) * sin(MPUData.Roll) * MPUData.Acc[1] +
                      cos(MPUData.Pitch) * cos(MPUData.Roll) * MPUData.Acc[2];
 
   return (1 - 1/abs(a_vertical)) * g0 * a_vertical;
+=======
+  // Conversão da aceleração: a_correto = a_cru / fator_de_escala (fs_a)
+  float mpu_g = (acc_x/fs_a - 0.34)*0.97;
+  accel = (mpu_g - mpu_g/abs(mpu_g))*g0;
+>>>>>>> 5138f55373843c3274dc7c73d167ad29a7d90401
 }
 
 float byteToFloat(uint8_t byteValue, float max) {
@@ -558,4 +635,81 @@ void star_wars_theme(){
     // stop the waveform generation before the next note.
     noTone(Buzzer.Pin);
   }
+}
+
+void star_wars_theme(){
+  //Essa função serve para tocar o tema do Star Wars
+  //Quando essa música toca, significa que o sistema está pronto para ser desligado e plugado em um
+  //computador para leitura
+
+  // change this to make the song slower or faster
+  int tempo = 108;
+
+  // notes of the moledy followed by the duration.
+  // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
+  // !!negative numbers are used to represent dotted notes,
+  // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+  int melody[] = {
+      // Dart Vader theme (Imperial March) - Star wars
+      // Substituindo as macros pelas frequências diretamente
+      
+      466, 8, 466, 8, 466, 8,  // NOTE_AS4
+      698, 2, 1047, 2,         // NOTE_F5, NOTE_C6
+      932, 8, 880, 8, 784, 8, 1568, 2, 1047, 4,  // NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F6, NOTE_C6
+      932, 8, 880, 8, 784, 8, 1568, 2, 1047, 4,  // NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F6, NOTE_C6
+      932, 8, 880, 8, 932, 8, 784, 2, 523, 8, 523, 8, 523, 8,  // NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_G5, NOTE_C5
+      698, 2, 1047, 2,         // NOTE_F5, NOTE_C6
+      932, 8, 880, 8, 784, 8, 1568, 2, 1047, 4,  // NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F6, NOTE_C6
+      
+      932, 8, 880, 8, 784, 8, 1568, 2, 1047, 4,  // NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F6, NOTE_C6
+      932, 8, 880, 8, 932, 8, 784, 2, 523, -8, 523, 16,  // NOTE_AS5, NOTE_A5, NOTE_AS5, NOTE_G5, NOTE_C5
+      587, -4, 587, 8, 932, 8, 880, 8, 784, 8, 698, 8,  // NOTE_D5, NOTE_D5, NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F5
+      698, 8, 784, 8, 880, 8, 784, 4, 587, 8, 659, 4, 523, -8, 523, 16,  // NOTE_F5, NOTE_G5, NOTE_A5, NOTE_G5, NOTE_D5, NOTE_E5, NOTE_C5
+      587, -4, 587, 8, 932, 8, 880, 8, 784, 8, 698, 8,  // NOTE_D5, NOTE_D5, NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F5
+      
+      1047, -8, 784, 16, 784, 2, 0, 8, 523, 8,  // NOTE_C6, NOTE_G5, REST, NOTE_C5
+      587, -4, 587, 8, 932, 8, 880, 8, 784, 8, 698, 8,  // NOTE_D5, NOTE_D5, NOTE_AS5, NOTE_A5, NOTE_G5, NOTE_F5
+      698, 8, 784, 8, 880, 8, 784, 4, 587, 8, 659, 4, 1047, -8, 1047, 16,  // NOTE_F5, NOTE_G5, NOTE_A5, NOTE_G5, NOTE_D5, NOTE_E5, NOTE_C6
+      1568, 4, 1245, 8, 1109, 4, 1047, 8, 932, 4, 831, 8, 784, 4, 698, 8,  // NOTE_F6, NOTE_DS6, NOTE_CS6, NOTE_C6, NOTE_AS5, NOTE_GS5, NOTE_G5, NOTE_F5
+      1047, 1  // NOTE_C6
+  };
+
+
+  // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
+  // there are two values per note (pitch and duration), so for each note there are four bytes
+  int notes = sizeof(melody) / sizeof(melody[0]) / 2;
+
+  // this calculates the duration of a whole note in ms
+  int wholenote = (60000 * 4) / tempo;
+
+  int divider = 0, noteDuration = 0;
+
+    // iterate over the notes of the melody. 
+    // Remember, the array is twice the number of notes (notes + durations)
+    for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+
+        // calculates the duration of each note
+        divider = melody[thisNote + 1];
+        if (divider > 0) {
+          // regular note, just proceed
+          noteDuration = (wholenote) / divider;
+        } else if (divider < 0) {
+          // dotted notes are represented with negative durations!!
+          noteDuration = (wholenote) / abs(divider);
+          noteDuration *= 1.5; // increases the duration in half for dotted notes
+        }
+
+        // we only play the note for 90% of the duration, leaving 10% as a pause
+        tone(Buzzer.Pin, melody[thisNote], noteDuration*0.9);
+
+        // Wait for the specief duration before playing the next note.
+        delay(noteDuration);
+        
+        // stop the waveform generation before the next note.
+        noTone(Buzzer.Pin);
+
+        if (thisNote >= (notes * 2 - 2)) {
+            thisNote = -2; // Voltar para o início
+      }
+    }
 }
